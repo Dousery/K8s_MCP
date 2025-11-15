@@ -1,0 +1,21 @@
+{
+  "mcpServers": {
+    "k8s-mcp-server": {
+      "command": "kubectl",
+      "args": [
+        "exec",
+        "-it",
+        "-n",
+        "mcp-server",
+        "$(kubectl get pods -n mcp-server -l app=mcp-server -o jsonpath='{.items[0].metadata.name}')",
+        "--",
+        "python",
+        "server.py"
+      ],
+      "env": {
+        "KUBECONFIG": ""
+      }
+    }
+  }
+}
+
