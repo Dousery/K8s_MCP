@@ -398,6 +398,19 @@ async def list_tools() -> list[Tool]:
                 "properties": {}
             }
         ),
+        Tool(
+            name="list_pods_by_node",
+            description="List all nodes with their pods grouped by node",
+            inputSchema={
+                "type": "object",
+                "properties": {
+                    "namespace": {
+                        "type": "string",
+                        "description": "Namespace name (optional, filters pods by namespace)"
+                    }
+                }
+            }
+        ),
     ])
     
     # Job tools
@@ -595,6 +608,11 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
         
         elif name == "cluster_info":
             result = await node_tools.cluster_info()
+            return [TextContent(type="text", text=result)]
+        
+        elif name == "list_pods_by_node":
+            namespace = arguments.get("namespace")
+            result = await node_tools.list_pods_by_node(namespace)
             return [TextContent(type="text", text=result)]
         
         # Job operations
