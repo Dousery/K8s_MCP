@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "k8s-mcp-server": {
+      "command": "python",
+      "args": [
+        "server.py"
+      ],
+      "cwd": "/path/to/your/k8s_mcp",
+      "env": {
+        "KUBECONFIG": ""
+      }
+    }
+  }
+}
+
