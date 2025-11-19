@@ -5,7 +5,6 @@ Provides tools for interacting with Kubernetes clusters via MCP protocol
 """
 
 import asyncio
-import sys
 from typing import Any, Sequence
 
 from mcp.server import Server
@@ -17,10 +16,8 @@ from tools.deployments import DeploymentTools
 from tools.yaml_ops import YamlOpsTools
 from tools.events import EventTools
 from tools.services import ServiceTools
-from tools.configmaps_secrets import ConfigMapSecretTools
 from tools.namespaces import NamespaceTools
 from tools.nodes import NodeTools
-from tools.jobs import JobTools
 
 # Initialize MCP server
 app = Server("k8s-mcp-server")
@@ -31,10 +28,8 @@ deployment_tools = DeploymentTools()
 yaml_tools = YamlOpsTools()
 event_tools = EventTools()
 service_tools = ServiceTools()
-configmap_secret_tools = ConfigMapSecretTools()
 namespace_tools = NamespaceTools()
 node_tools = NodeTools()
-job_tools = JobTools()
 
 
 @app.list_tools()
@@ -252,76 +247,6 @@ async def list_tools() -> list[Tool]:
         ),
     ])
     
-    # ConfigMap and Secret tools
-    tools.extend([
-        Tool(
-            name="list_configmaps",
-            description="List all ConfigMaps in a namespace",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (optional, defaults to 'default')"
-                    }
-                }
-            }
-        ),
-        Tool(
-            name="get_configmap",
-            description="Get ConfigMap data",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Name of the ConfigMap"
-                    },
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (defaults to 'default')"
-                    }
-                },
-                "required": ["name"]
-            }
-        ),
-        Tool(
-            name="list_secrets",
-            description="List all Secrets in a namespace",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (optional, defaults to 'default')"
-                    }
-                }
-            }
-        ),
-        Tool(
-            name="get_secret",
-            description="Get Secret data (optionally decoded)",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "name": {
-                        "type": "string",
-                        "description": "Name of the Secret"
-                    },
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (defaults to 'default')"
-                    },
-                    "decode": {
-                        "type": "boolean",
-                        "description": "Whether to decode base64 values (default: true)"
-                    }
-                },
-                "required": ["name"]
-            }
-        ),
-    ])
-    
     # Namespace tools
     tools.extend([
         Tool(
@@ -413,72 +338,6 @@ async def list_tools() -> list[Tool]:
         ),
     ])
     
-    # Job tools
-    tools.extend([
-        Tool(
-            name="list_jobs",
-            description="List all jobs in a namespace",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (optional, defaults to 'default')"
-                    }
-                }
-            }
-        ),
-        Tool(
-            name="describe_job",
-            description="Get detailed information about a job",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "job_name": {
-                        "type": "string",
-                        "description": "Name of the job"
-                    },
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (defaults to 'default')"
-                    }
-                },
-                "required": ["job_name"]
-            }
-        ),
-        Tool(
-            name="list_cronjobs",
-            description="List all CronJobs in a namespace",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (optional, defaults to 'default')"
-                    }
-                }
-            }
-        ),
-        Tool(
-            name="delete_job",
-            description="Delete a job",
-            inputSchema={
-                "type": "object",
-                "properties": {
-                    "job_name": {
-                        "type": "string",
-                        "description": "Name of the job"
-                    },
-                    "namespace": {
-                        "type": "string",
-                        "description": "Namespace name (defaults to 'default')"
-                    }
-                },
-                "required": ["job_name"]
-            }
-        ),
-    ])
-    
     return tools
 
 
@@ -556,30 +415,6 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
             result = await service_tools.describe(service_name, namespace)
             return [TextContent(type="text", text=result)]
         
-        # ConfigMap and Secret operations
-        elif name == "list_configmaps":
-            namespace = arguments.get("namespace", "default")
-            result = await configmap_secret_tools.list_configmaps(namespace)
-            return [TextContent(type="text", text=result)]
-        
-        elif name == "get_configmap":
-            name = arguments["name"]
-            namespace = arguments.get("namespace", "default")
-            result = await configmap_secret_tools.get_configmap(name, namespace)
-            return [TextContent(type="text", text=result)]
-        
-        elif name == "list_secrets":
-            namespace = arguments.get("namespace", "default")
-            result = await configmap_secret_tools.list_secrets(namespace)
-            return [TextContent(type="text", text=result)]
-        
-        elif name == "get_secret":
-            name = arguments["name"]
-            namespace = arguments.get("namespace", "default")
-            decode = arguments.get("decode", True)
-            result = await configmap_secret_tools.get_secret(name, namespace, decode)
-            return [TextContent(type="text", text=result)]
-        
         # Namespace operations
         elif name == "list_namespaces":
             result = await namespace_tools.list_namespaces()
@@ -613,29 +448,6 @@ async def call_tool(name: str, arguments: dict[str, Any]) -> Sequence[TextConten
         elif name == "list_pods_by_node":
             namespace = arguments.get("namespace")
             result = await node_tools.list_pods_by_node(namespace)
-            return [TextContent(type="text", text=result)]
-        
-        # Job operations
-        elif name == "list_jobs":
-            namespace = arguments.get("namespace", "default")
-            result = await job_tools.list_jobs(namespace)
-            return [TextContent(type="text", text=result)]
-        
-        elif name == "describe_job":
-            job_name = arguments["job_name"]
-            namespace = arguments.get("namespace", "default")
-            result = await job_tools.describe_job(job_name, namespace)
-            return [TextContent(type="text", text=result)]
-        
-        elif name == "list_cronjobs":
-            namespace = arguments.get("namespace", "default")
-            result = await job_tools.list_cronjobs(namespace)
-            return [TextContent(type="text", text=result)]
-        
-        elif name == "delete_job":
-            job_name = arguments["job_name"]
-            namespace = arguments.get("namespace", "default")
-            result = await job_tools.delete_job(job_name, namespace)
             return [TextContent(type="text", text=result)]
         
         else:
