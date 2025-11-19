@@ -1,5 +1,8 @@
 # K8s_MCP
-An AI-powered Model Context Protocol server that lets language models directly manage and visualize Kubernetes clusters through safe, high-level operational tools.
+An Model Context Protocol server that lets language models directly manage and visualize Kubernetes clusters through safe, high-level operational tools.
+
+<img width="1850" height="978" alt="image" src="https://github.com/user-attachments/assets/ce131ccf-53d1-4c1f-a539-3ad9cb5c1cec" />
+
 
 ## 🚀 AI'da Kullanım (Kurulum)
 
