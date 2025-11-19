@@ -33,24 +33,20 @@ class NodeTools:
             for node in nodes.items:
                 result += f"  - {node.metadata.name}\n"
                 
-                # Status
                 status_conditions = {c.type: c.status for c in node.status.conditions if c.type in ['Ready', 'MemoryPressure', 'DiskPressure', 'PIDPressure']}
                 ready = status_conditions.get('Ready', 'Unknown')
                 result += f"    Status: Ready={ready}\n"
                 
-                # Node info
                 if node.status.node_info:
                     result += f"    OS: {node.status.node_info.operating_system}/{node.status.node_info.architecture}\n"
                     result += f"    Kubernetes: {node.status.node_info.kubelet_version}\n"
                     result += f"    Container Runtime: {node.status.node_info.container_runtime_version}\n"
                 
-                # Resources
                 if node.status.allocatable:
                     cpu = node.status.allocatable.get('cpu', 'N/A')
                     memory = node.status.allocatable.get('memory', 'N/A')
                     result += f"    Allocatable: CPU={cpu}, Memory={memory}\n"
                 
-                # Labels
                 if node.metadata.labels:
                     role = node.metadata.labels.get('node-role.kubernetes.io/control-plane') or \
                            node.metadata.labels.get('node-role.kubernetes.io/master') or \
@@ -75,14 +71,12 @@ class NodeTools:
             result = f"Node: {node.metadata.name}\n"
             result += f"Created: {node.metadata.creation_timestamp}\n\n"
             
-            # Status
             result += "Conditions:\n"
             for condition in node.status.conditions:
                 result += f"  {condition.type}: {condition.status} - {condition.reason or 'N/A'}\n"
                 if condition.message:
                     result += f"    Message: {condition.message}\n"
             
-            # Node info
             result += "\nNode Info:\n"
             if node.status.node_info:
                 result += f"  OS: {node.status.node_info.operating_system}\n"
@@ -91,7 +85,6 @@ class NodeTools:
                 result += f"  Kubernetes: {node.status.node_info.kubelet_version}\n"
                 result += f"  Container Runtime: {node.status.node_info.container_runtime_version}\n"
             
-            # Resources
             result += "\nCapacity:\n"
             if node.status.capacity:
                 for key, value in node.status.capacity.items():
@@ -102,7 +95,6 @@ class NodeTools:
                 for key, value in node.status.allocatable.items():
                     result += f"  {key}: {value}\n"
             
-            # Labels
             if node.metadata.labels:
                 result += "\nLabels:\n"
                 for key, value in node.metadata.labels.items():
@@ -153,7 +145,6 @@ class NodeTools:
             for node_name in sorted_nodes:
                 node_pods = pods_by_node[node_name]
                 
-                # Get node info
                 node = next((n for n in nodes.items if n.metadata.name == node_name), None)
                 if node:
                     status_conditions = {c.type: c.status for c in node.status.conditions if c.type == 'Ready'}
