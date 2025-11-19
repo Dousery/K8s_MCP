@@ -5,8 +5,6 @@ An AI-powered Model Context Protocol server that lets language models directly m
 
 MCP server'ınızı Claude Desktop, Cursor veya diğer MCP destekleyen AI araçlarında kullanabilirsiniz.
 
-> 📖 **Hızlı Başlangıç için:** [QUICKSTART.md](QUICKSTART.md) dosyasına bakın!
-
 ### 1. Bağımlılıkları Kurun
 
 ```powershell
@@ -37,7 +35,7 @@ kubectl version --client
       "args": [
         "server.py"
       ],
-      "cwd": "C:\\Users\\dogus\\OneDrive\\Masaüstü\\k8s_mcp",
+      "cwd": "Your mcp server path here",
       "env": {
         "KUBECONFIG": ""
       }
@@ -101,7 +99,7 @@ MCP server'ınız aşağıdaki komutları destekler:
 
 Deployment'larınızı kurduktan sonra pod'ları canlı görmek için aşağıdaki platformları kullanabilirsiniz:
 
-### 1. Kubernetes Dashboard (Resmi Web UI) ⭐ Önerilen
+### 1. Kubernetes Dashboard (Resmi Web UI)
 
 Kubernetes'in resmi web arayüzü. Pod'ları, deployment'ları, servisleri ve diğer kaynakları görsel olarak yönetebilirsiniz.
 
@@ -129,7 +127,7 @@ kubectl port-forward -n kubernetes-dashboard service/kubernetes-dashboard 8443:4
 
 Tarayıcıda `https://localhost:8443` adresine gidin ve token ile giriş yapın.
 
-### 2. Lens (Desktop Uygulaması) 🚀 En Popüler
+### 2. Lens (Desktop Uygulaması) 
 
 Güçlü bir desktop uygulaması. Gerçek zamanlı pod durumları, log görüntüleme ve kaynak kullanımı grafikleri.
 
@@ -153,31 +151,3 @@ scoop install k9s
 # Kullanım
 k9s
 ```
-
-### 4. Octant (VMware)
-
-Açık kaynak web tabanlı arayüz.
-
-**Kurulum:**
-```bash
-# Windows için indirin
-# https://github.com/vmware-tanzu/octant/releases
-
-# Çalıştırın
-octant
-```
-
-Tarayıcıda `http://127.0.0.1:7777` adresine gidin.
-
-### 5. Rancher (Enterprise Platform)
-
-Kubernetes yönetimi için kapsamlı bir platform.
-
-**Kurulum:**
-```bash
-kubectl apply -f https://github.com/rancher/rancher/releases/download/v2.8.0/rancher.yaml
-```
-
-### Hızlı Başlangıç
-
-En hızlı yol için **Lens** veya **k9s** kullanmanızı öneririz. Kubernetes Dashboard da iyi bir seçenektir ancak kurulumu biraz daha karmaşıktır.
